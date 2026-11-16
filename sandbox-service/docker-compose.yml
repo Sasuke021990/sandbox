@@ -4,6 +4,8 @@ services:
     security_opt:
       - seccomp:unconfined   # required by AIO (browser/chrome)
     shm_size: "2gb"
+    mem_limit: 2g        # cap: container killed (OOM) if it exceeds this
+    cpus: 2.0
     ports:
       - "127.0.0.1:8080:8080"   # host access only (VNC/VSCode); bots use http://aio:8080
     volumes:
