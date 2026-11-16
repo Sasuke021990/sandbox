@@ -1,0 +1,4 @@
+sandbox/tools/
+*.zip
+redroid-data/
+__pycache__/

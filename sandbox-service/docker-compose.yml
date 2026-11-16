@@ -1,0 +1,28 @@
+services:
+  android:
+    image: redroid/redroid:14.0.0-latest
+    privileged: true
+    command:
+      - androidboot.redroid_width=1080
+      - androidboot.redroid_height=1920
+      - androidboot.redroid_dpi=480
+    volumes:
+      - ${HOME}/redroid-data:/data
+    networks: [sandboxnet]
+    restart: unless-stopped
+
+  api:
+    build: .
+    ports:
+      - "8000:8000"   # HTTP API  -> http://sandbox:8000  (from inside OpenBot's container)
+      - "8001:8001"   # MCP       -> http://sandbox:8001/mcp
+    environment:
+      ANDROID_SERIAL: android:5555
+    depends_on: [android]
+    networks: [sandboxnet]
+    restart: unless-stopped
+
+networks:
+  sandboxnet:
+    name: devteam-sandbox
+    external: true
