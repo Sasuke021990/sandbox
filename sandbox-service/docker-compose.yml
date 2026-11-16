@@ -22,6 +22,24 @@ services:
     networks: [sandboxnet]
     restart: unless-stopped
 
+  aio:
+    image: ghcr.io/agent-infra/sandbox:1.11.0
+    security_opt:
+      - seccomp:unconfined   # required by AIO (browser/chrome)
+    shm_size: "2gb"
+    ports:
+      - "127.0.0.1:8080:8080"   # host access only (VNC/VSCode); bots use http://aio:8080
+    volumes:
+      - aio_data:/home/gem/workspace
+    environment:
+      SANDBOX_API_KEY: ${SANDBOX_API_KEY:-}
+      TZ: ${TZ:-UTC}
+    networks: [sandboxnet]
+    restart: unless-stopped
+
+volumes:
+  aio_data:
+
 networks:
   sandboxnet:
     name: devteam-sandbox

@@ -1,7 +1,8 @@
-# Sandbox Service — Android test environment for OpenBot bots
+# Sandbox Service — Android + web/browser test environment for OpenBot bots
 
-Two containers on one Docker network: `android` (redroid, Android 14, headless) and
-`api` (FastAPI HTTP + MCP wrapper that drives Android via adb).
+Three containers on one Docker network: `android` (redroid, Android 14, headless),
+`api` (FastAPI HTTP + MCP wrapper that drives Android via adb), and `aio`
+(AIO Sandbox: sandboxed browser + shell + files + Jupyter + VS Code + MCP).
 
 ## One-time host setup (on the machine that runs OpenBot, needs sudo)
 
@@ -46,6 +47,26 @@ curl -s -F file=@app.apk http://sandbox:8000/smoke
 MCP: `http://sandbox:8001/mcp` — add as a streamable-HTTP MCP server in OpenBot
 (settings → MCP servers → URL). Tools: `install_apk`, `launch`, `screenshot_png_base64`,
 `tap`, `swipe`, `type_text`, `press_key`, `shell_cmd`, `logcat`, `uninstall`, `status`.
+
+## AIO Sandbox (web apps & browser testing): `http://aio:8080`
+
+All-in-one sandbox for web/backend and Linux-side testing (image `agent-infra/sandbox`,
+Apache-2.0, pinned to release 1.11.0):
+
+| URL | Purpose |
+|---|---|
+| `http://aio:8080/v1/docs` | HTTP API docs (shell exec, file read/write, browser screenshot, Jupyter) |
+| `http://aio:8080/mcp` | MCP server: browser, file, shell, markitdown tools |
+| `http://aio:8080/vnc/index.html?autoconnect=true` | watch the sandboxed browser visually (host-only) |
+| `http://aio:8080/code-server/` | VS Code in the sandbox (host-only) |
+
+Setup: copy `.env.example` to `.env` and set `SANDBOX_API_KEY` (auth for API/Jupyter/VNC).
+Bots authenticate with the `X-AIO-API-Key` header. If unset, services stay open — fine on
+the internal docker network, never expose 8080 publicly.
+
+RAM note: AIO (browser + Chrome ≈ 1.5–2 GB) + redroid (2–3 GB) together exceed the
+~5 GB this host has free. Run one at a time, or add `mem_limit`/`cpus` per service in
+docker-compose.yml.
 
 ## Ops
 
