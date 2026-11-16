@@ -15,12 +15,12 @@ sudo docker network connect devteam-sandbox <openbot-container-name>
 
 # build & start
 cd sandbox-service
-cp .env.example .env        # set SANDBOX_API_KEY (openssl rand -hex 24)
+# (no API key needed — auth removed by user choice)
 sudo -E docker compose up -d
 ```
 
 Check: `sudo docker ps` → `sandbox-aio-1` Up; from inside OpenBot's container:
-`curl -H "X-AIO-API-Key: $KEY" http://aio:8080/v1/sandbox`
+`curl http://aio:8080/v1/sandbox`
 
 ## What the bots use: `http://aio:8080`
 
@@ -44,7 +44,7 @@ Client SDKs (optional, nicer than curl): `pip install agent-sandbox` /
 
 - Stop/start: `sudo docker compose stop|start` (in sandbox-service/)
 - Fresh workspace (wipe all files): `sudo docker compose down && sudo docker volume rm sandbox-service_aio_data`
-- `SANDBOX_API_KEY` protects API/Jupyter/VNC; bots pass header `X-AIO-API-Key: <key>`
+- No API key (auth removed): the API/Jupyter/VNC are open, so port 8080 must never leave this machine — never publish it, never bind it to 0.0.0.0
 - Do NOT expose port 8080 to the internet.
 - RAM: browser + Chrome ≈ 1.5–2 GB peak. Add `mem_limit`/`cpus` under the `aio`
   service if the host is tight (e.g. `mem_limit: 2g`, `cpus: 2`).
